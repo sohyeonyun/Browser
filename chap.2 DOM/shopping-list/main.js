@@ -28,34 +28,47 @@ function onAdd() {
   input.focus(); // 입력 계속할 수 있다.
 }
 
-// 아이템 하나하나 다 만들어주면 됨.
+// 개선 후.. 아이템마다 고유 id 지정
+let id = 0;  // 실제론 UUID를 써야 한다.
 function createItem(text) {
   const itemRow = document.createElement('li');
   itemRow.setAttribute('class', 'item__row');
-
-  const item = document.createElement('div');
-  item.setAttribute('class', 'item');
-
-  const span = document.createElement('span');
-  span.setAttribute('class', 'item__name');
-  span.innerText = text;
-
-  const deleteBtn = document.createElement('button');
-  deleteBtn.setAttribute('class', 'item__delete');
-  deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-  deleteBtn.addEventListener('click', () => {
-    items.removeChild(itemRow);
-  });
-
-  const itemDivider = document.createElement('div');
-  itemDivider.setAttribute('class', 'item__divider');
-  
-  item.appendChild(span);
-  item.appendChild(deleteBtn);
-  itemRow.appendChild(item);
-  itemRow.appendChild(itemDivider);
-
+  itemRow.setAttribute('data-id', id);
+  itemRow.innerHTML = `
+      <div class="item">
+        <span class="item__name">${text}</span>
+        <button class="item__delete">
+          <i class="fas fa-trash-alt" data-id=${id}></i>
+        </button>
+      </div>
+      <div class="item__divider"></div>`;
+  id++;
   return itemRow;
+
+  // ---------------------- 개선 전 --------------------------
+  // 아이템 하나하나 다 만들어주면 됨.
+  // const item = document.createElement('div');
+  // item.setAttribute('class', 'item');
+
+  // const span = document.createElement('span');
+  // span.setAttribute('class', 'item__name');
+  // span.innerText = text;
+
+  // const deleteBtn = document.createElement('button');
+  // deleteBtn.setAttribute('class', 'item__delete');
+  // deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+  // deleteBtn.addEventListener('click', () => {
+  //   items.removeChild(itemRow);
+  // });
+
+  // const itemDivider = document.createElement('div');
+  // itemDivider.setAttribute('class', 'item__divider');
+  
+  // item.appendChild(span);
+  // item.appendChild(deleteBtn);
+  // itemRow.appendChild(item);
+  // itemRow.appendChild(itemDivider);
+  // return itemRow;
 }
 
 addBtn.addEventListener('click', () => {
@@ -67,3 +80,14 @@ input.addEventListener('keypress', event => {
     onAdd();
   }
 })
+
+// 개선 후.. delete 리스너 추가
+items.addEventListener('click', event => {
+  // 개발툴에서 target 확인
+  const id = event.target.dataset.id;
+  if (id) { //  && target.matches(.delete__btn) - 여백 생길 때 버그
+    const toBeDeleted = document.querySelector(`.item__row[data-id="${id}"]`);
+    toBeDeleted.remove();
+  }
+  
+});
